@@ -3,7 +3,7 @@
   <br>
   <a href="#">Privacy Policy</a> | <a href="#">Contact</a>
 </footer>
-
+  
 <style>
   footer {
   background: #222;

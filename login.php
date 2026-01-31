@@ -13,7 +13,15 @@ session_start();
 $status = "";
 $email = $_POST['email'] ?? '';
 $pasword = $_POST['pasword'] ?? '';
+if(empty($status)){
 
+    if(empty($email)){
+        $status = "Email is required!<br>";
+    }
+    if(empty($password)){
+        $status .= "Password is required!<br>";
+    }
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (authenticate($email, $password)) {
