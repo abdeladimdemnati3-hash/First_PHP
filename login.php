@@ -1,41 +1,45 @@
-<?php include('./inc/header.php');
-$email = $_POST['email'] ?? '';
-$password = $_POST['password'] ?? '';
+<?php 
+include('./inc/header.php');
 require_once('./inc/config.php');
 require_once('./inc/library.php'); 
 
 session_start();
 
-
-
-
-// 
 $status = "";
 $email = $_POST['email'] ?? '';
-$pasword = $_POST['pasword'] ?? '';
-if(empty($status)){
-
-    if(empty($email)){
-        $status = "Email is required!<br>";
-    }
-    if(empty($password)){
-        $status .= "Password is required!<br>";
-    }
-}
+$password = $_POST['password'] ?? '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (authenticate($email, $password)) {
-        session_start();
-        $_SESSION['email'] = $email;
-        redirect("admin"); 
-        die();
+
+    if (empty($email)) {
+        $status .= "Email is required!<br>";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $status .= "Invalid email format!<br>";
+    }
+
+    if (empty($password)) {
+        $status .= "Password is required!<br>";
+    } elseif (strlen($password) < 8) {
+        $status .= "Password must be at least 8 characters long!<br>";
     } else {
-        $status = "The Provided Credentials didn't work!";
+        $option = ['options' => ['regexp' => '/^([a-z0-9])+$/i']];
+        if (!filter_var($password, FILTER_VALIDATE_REGEXP, $option)) {
+            $status .= "Invalid password format!<br>";
+        }
+    }
+
+    if (empty($status)) {
+        if (authenticate($email, $password)) {
+            $_SESSION['email'] = $email;
+            redirect("admin"); 
+            exit();
+        } else {
+            $status = "The Provided Credentials didn't work!";
+        }
     }
 }
-
 ?>
-<p><?php echo "$email - $password"; ?></p>
+
 <div class="container">
     <div class="row">
         <div class="col-md-6 mx-auto mt-5">
@@ -52,5 +56,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 </div>
-
-<?php include('./inc/footer.php'); ?>
